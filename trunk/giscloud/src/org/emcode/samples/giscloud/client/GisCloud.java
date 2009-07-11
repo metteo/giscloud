@@ -70,6 +70,7 @@ public class GisCloud implements EntryPoint {
 			.create(GisCloudService.class);
 	private HTML codeRepository;
 	private HTML poweredBy;
+	private HTML version;
 
 	/**
 	 * This is the entry point method.
@@ -256,6 +257,11 @@ public class GisCloud implements EntryPoint {
 		codeRepository = new HTML("Source available at: <a target=\"_blank\" href=\"http://giscloud.googlecode.com\">http://giscloud.googlecode.com</a>");
 		vp.add(codeRepository);
 		vp.setCellHorizontalAlignment(codeRepository, HasHorizontalAlignment.ALIGN_CENTER);
+		
+		// version
+		version = new HTML("beta 0.6");
+		vp.add(version);
+		vp.setCellHorizontalAlignment(version, HasHorizontalAlignment.ALIGN_CENTER);
 		
 		// powered by logo
 		poweredBy = new HTML("<p/><br/><img src=\"http://code.google.com/appengine/images/appengine-silver-120x30.gif\" alt=\"Powered by Google App Engine\" />");

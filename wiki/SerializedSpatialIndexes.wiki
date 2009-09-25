@@ -8,7 +8,9 @@ However, since we don't have access to a file system on App Engine we must store
 
 = Details =
 
-While it is easy enough to add `implements Serializable` to classes and `extends Serializable` to interfaces in the `com.vividsolutions.jts.index.*` packages, it took a little digging to see that the `STRtree` (the only class we have tested for now) implements a few comparators that need some work:
+While it is easy enough to add `implements Serializable` to classes and `extends Serializable` to interfaces in the `com.vividsolutions.jts.index.*` packages, it took a little digging to see that the `STRtree` (the only class we have tested for now) implements a few comparators that need some work.
+
+== Current comparator code (found in STRtree) ==
 
 {{{
     // a comparator for the x coordinate
@@ -32,7 +34,9 @@ While it is easy enough to add `implements Serializable` to classes and `extends
     };
 }}}
 
-These inline comparators are replaced with two new classes:
+== New comparator code (found in modified STRtree) ==
+
+The current inline comparators are replaced with two new classes:
 
 {{{
     private BoundableXComparator xComparator = new BoundableXComparator();
@@ -102,3 +106,89 @@ public interface Boundable extends Serializable {
 }}}
 
 which existed before in the JTS code base, but which now extends Serializable.
+
+== Implementation in App Engine ==
+
+Since an STRtree is binary, we can only store it as a `Blob` in App Engine. But the Blob class is final, so we don't get to extend it to make our own Blob type. The workaround is to create a wrapper, which we call `SpatialIndexBlob`:
+
+{{{
+package org.emcode.samples.giscloud.server;
+
+import java.io.Serializable;
+
+import javax.jdo.annotations.IdentityType;
+import javax.jdo.annotations.PersistenceCapable;
+import javax.jdo.annotations.Persistent;
+import javax.jdo.annotations.PrimaryKey;
+
+import com.google.appengine.api.datastore.Blob;
+
+@PersistenceCapable(identityType = IdentityType.APPLICATION)
+public class SpatialIndexBlob {
+
+	@PrimaryKey
+	@Persistent
+	private String name;
+	
+	@Persistent
+	private Blob blob;
+	
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public Blob getBlob() {
+		return blob;
+	}
+	public void setBlob(Blob blob) {
+		this.blob = blob;
+	}
+	
+}
+}}}
+
+Now, when we want to create an STRtree with geometry that is originally WKT then store it in App Engine, we follow this idea:
+
+{{{
+
+// create geometry from well known text
+slcountyWKT = "...." // query from database
+WKTReader reader = new WKTReader( gf );
+Polygon slcounty = null;
+try {
+	slcounty = (Polygon) reader.read(slcountyWKT);
+} catch (ParseException e) {
+	// TODO Auto-generated catch block
+	e.printStackTrace();
+}
+
+// create a tree
+STRtree strTree = new STRtree();
+
+// insert the polygon (in this case, only one, but obviously it can hold more)
+strTree.insert(slcounty.getEnvelopeInternal(), slcounty);
+
+// build the index
+strTree.build();
+
+// set up the blob for storage
+ByteArrayOutputStream bos = new ByteArrayOutputStream();
+ObjectOutputStream oos = new ObjectOutputStream(bos);
+oos.writeObject(index);
+byte[] bArray = bos.toByteArray();
+Blob blob = new Blob(bArray); // Blob is an App Engine type for binary objects
+SpatialIndexBlob sBlob = new SpatialIndexBlob(); // this is our custom wrapper
+sBlob.setName("SLCOUNTYINDEX"); // make it easy to fetch it again
+sBlob.setBlob(blob);
+
+// store our spatial index blob
+PersistenceManager pm = PMF.get().getPersistenceManager();
+try {
+    pm.makePersistent(sBlob);
+} finally {
+    pm.close();
+}
+
+}}}

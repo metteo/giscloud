@@ -3,7 +3,7 @@
 
 = Introduction =
 
-The GisCloud application is currently storing the polygon for Salt Lake County as Well-Known Text (WKT). For the existing application where we are simply testing a single point-in-polygon and polygon-in-polygon, this is acceptable. However, if we need to do this for many geometries (e.g. if we were testing a point in tracts instead of a point in a county) then fetching each WKT, converting to geometry, and either looping through each to test for inclusion or building a spatial index, just takes too long -- especially if the user is clicking to generate the activity.
+The [http://giscloud.appspot.com GisCloud] application is currently storing the polygon for Salt Lake County as Well-Known Text (WKT). For the existing application where we are simply testing a single point-in-polygon and polygon-in-polygon, this is acceptable. However, if we need to do this for many geometries (e.g. if we were testing a point in tracts instead of a point in a county) then fetching each WKT, converting to geometry, and either looping through each to test for inclusion or building a spatial index, just takes too long -- especially if the user is clicking to generate the activity.
 
 However, since we don't have access to a file system on App Engine we must store spatial indexes as binary objects (blobs) in the datastore. And all objects must be serializable to be persisted. Thus, the fix we need in JTS is for spatial indexes to be serializable.
 

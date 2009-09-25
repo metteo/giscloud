@@ -1,13 +1,34 @@
-#summary Modifications to Java Topology Suite to allow Spatial Indexes to be saved in the Google App Engine Datastore
+#summary Modifications to Java Topology Suite to allow Spatial Indexes to be persistent in the Google App Engine Datastore
 
 = Introduction =
 
-Add your content here.
+The GisCloud application is currently storing the polygon for Salt Lake County as Well-Known Text (WKT). For the existing application where we are simply testing a single point-in-polygon and polygon-in-polygon, this is acceptable. However, if we need to do this for many geometries (e.g. if we were testing a point in tracts instead of a point in a county) then fetching each WKT, converting to geometry, and either looping through each to test for inclusion or building a spatial index, just takes too long -- especially if the user is clicking to generate the activity.
 
+However, since we don't have access to a file system on App Engine we must store spatial indexes as binary objects (blobs) in the datastore. And all objects must be serializable to be persisted. Thus, the fix we need in JTS is for spatial indexes to be serializable.
 
 = Details =
 
-Add your content here.  Format your content with:
-  * Text in *bold* or _italic_
-  * Headings, paragraphs, and lists
-  * Automatic links to other wiki pages
+While it is easy enough to add `implements Serializable` to classes and `extends Serializable` to interfaces, it took a little digging to see that the `STRtree` (the only one we are serializing for now) implements a few comparators that need some work:
+
+{{{
+    // a comparator for the x coordinate
+    private Comparator xComparator =
+    new Comparator() {
+      public int compare(Object o1, Object o2) {
+        return compareDoubles(
+            centreX((Envelope)((Boundable)o1).getBounds()),
+            centreX((Envelope)((Boundable)o2).getBounds()));
+      }
+    };
+
+    // a comparator for the y coordinate
+    private Comparator yComparator =
+    new Comparator() {
+      public int compare(Object o1, Object o2) {
+        return compareDoubles(
+            centreY((Envelope)((Boundable)o1).getBounds()),
+            centreY((Envelope)((Boundable)o2).getBounds()));
+      }
+    };
+
+}}} 

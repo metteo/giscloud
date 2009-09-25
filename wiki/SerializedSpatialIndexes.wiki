@@ -34,7 +34,7 @@ While it is easy enough to add `implements Serializable` to classes and `extends
     };
 }}}
 
-== New comparator code (found in modified STRtree) ==
+== New comparator code (our modification of STRtree) ==
 
 The current inline comparators are replaced with two new classes:
 
@@ -192,3 +192,11 @@ try {
 }
 
 }}}
+
+= TODO =
+
+This modification permits us to save spatial indexes in the App Engine datastore, but we have not yet tested reading them back out and using them in a spatial query. It's really just a start. Other tasks that we need to do are:
+
+  * Test indexes with more elements
+  * Create indexes with TaskQueue (e.g. query all counties, fetch their WKT, make polygons, shove the polygons in an STRtree, build the index, store the index in the datastore)
+  * Consider splitting large indexes across multiple `SpatialIndexBlob`s. It is likely that some indexes created with a TaskQueue will be larger than the 10MB blob limit in App Engine. With a bit of work we can make a `SpatialIndexBlob` know what order it is in a list, and just create multiple `SpatialIndexBlob`s with the same name. When we query for all them, we suck out their byte arrays and stitch them back together. Remember we used to split .zip files across multiple floppy disks? Hopefully Google will catch on and take us out of the "floppy disk" limit for blobs and into something more appealing (like 100MB Zip(R) drives... or 128M USB drives...)

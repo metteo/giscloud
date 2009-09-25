@@ -1,5 +1,5 @@
 #summary Modifications to Java Topology Suite to allow Spatial Indexes to be persistent in the Google App Engine Datastore
-#labels jts,gis,sttree,taskqueue,spatial,spatialindex
+#labels jts,gis,sttree,taskqueue,spatial,spatialindex,Featured
 
 = Introduction =
 

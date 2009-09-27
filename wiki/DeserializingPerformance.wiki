@@ -1,8 +1,6 @@
 #summary Speed of deserializing an STRtree on App Engine production
 
-= Update =
-
-The performance issues outlined below were solved by making the index a static member, and doing the heavy lifting in the `HTTPServlet.init()` method. That first hit still takes a few seconds, but subsequent hits drop right back down to a few dozen milliseconds or less.
+*UPDATE: The performance issues outlined below were solved by making the index a static member, and doing the heavy lifting in the `HTTPServlet.init()` method. That first hit still takes a few seconds, but subsequent hits drop right back down to a few dozen milliseconds or less.*
 
 == Introduction ==
 

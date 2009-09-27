@@ -1,5 +1,9 @@
 #summary Speed of deserializing an STRtree on App Engine production
 
+= Update =
+
+The performance issues outlined below were solved by making the index a static member, and doing the heavy lifting in the `HTTPServlet.init()` method. That first hit still takes a few seconds, but subsequent hits drop right back down to a few dozen milliseconds or less.
+
 == Introduction ==
 
 We are trying to store STRtrees as serialized files on App Engines file system in our WAR's WEB-INF/ directory. The idea is that a spatial query runs faster against an index, rather than collecting all possible entities and querying each one individually.

@@ -41,5 +41,6 @@ Query index for point
 	Elapsed milliseconds to query index: 1
 
 REPORT:
-	The test point was inside multipolygon: MULTIPOLYGON (((-111.843755361566 40.7104458570532, -111.843740604643 40.7098396898185, ... -111.843755361566 40.7104458570532)))
+	The test point was inside multipolygon: 
+        MULTIPOLYGON (((-111.843755361566 40.7104458570532, -111.843740604643 40.7098396898185, ... -111.843755361566 40.7104458570532)))
 }}}

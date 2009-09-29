@@ -3,6 +3,8 @@
 
 = Introduction =
 
+*UPDATED 28 Sep 2009* The reference application now uses a serialized STRtree spatial index containing the JTS geometry for Salt Lake County. This data retrieval method is now live on the reference application instead of the WKT process outlined below*
+
 The [http://giscloud.appspot.com GisCloud] reference application is currently storing the polygon for Salt Lake County as Well-Known Text (WKT). For the existing application where we are simply testing a single point-in-polygon and polygon-in-polygon, this is acceptable. However, if we need to do this for many geometries (e.g. if we were testing a point in many tracts instead of a point in a single county) then fetching each WKT, converting to geometry, and either looping through each to test for inclusion or building a spatial index, just takes too long -- especially if the user is clicking to generate the activity.
 
 However, since we don't have access to a file system on App Engine we must store spatial indexes as binary objects (blobs) in the datastore. And all objects must be serializable to be persisted. Thus, the fix we need in JTS is for spatial indexes to be serializable.

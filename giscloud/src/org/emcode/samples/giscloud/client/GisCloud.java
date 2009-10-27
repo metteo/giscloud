@@ -256,7 +256,7 @@ public class GisCloud implements EntryPoint {
 		vp.setCellHorizontalAlignment(codeRepository, HasHorizontalAlignment.ALIGN_CENTER);
 		
 		// version
-		version = new HTML("beta 0.8 - featuring a JTS spatial index (STRtree) deserialized from disk.");
+		version = new HTML("beta 0.9 - featuring a JTS spatial index (STRtree) deserialized from disk and stored in Memcache");
 		vp.add(version);
 		vp.setCellHorizontalAlignment(version, HasHorizontalAlignment.ALIGN_CENTER);
 		

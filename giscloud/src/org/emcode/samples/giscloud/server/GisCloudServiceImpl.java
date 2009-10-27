@@ -4,16 +4,21 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.cache.Cache;
+import javax.cache.CacheFactory;
+import javax.cache.CacheManager;
 import javax.jdo.PersistenceManager;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 
 import org.emcode.samples.giscloud.client.GisCloudService;
 
+import com.google.appengine.api.NamespaceManager;
 import com.google.appengine.api.datastore.Text;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.vividsolutions.jts.geom.Coordinate;
@@ -35,33 +40,62 @@ public class GisCloudServiceImpl extends RemoteServiceServlet implements
 	private static STRtree index = null;
 	private static final Logger log = Logger.getLogger(GisCloudServiceImpl.class.getName());
 	private GeometryFactory gf = new GeometryFactory();
+	Cache cache;
 	
 	public void init(ServletConfig config) throws ServletException
     {
 		
 		super.init(config);
-		
+
 		try
 		{
-			long s1 = System.currentTimeMillis();
-	    	log.info("Fetch serialized index for Salt Lake County");
-	        File file = new File("WEB-INF/saltlakecounty.ser");
-	        log.info(file.getAbsolutePath());
-	        log.info("Creating FileInputStream");
-	        FileInputStream fis = new FileInputStream(file);
-	        log.info("Creating ObjectInputStream");
-	        ObjectInputStream in = new ObjectInputStream(fis);
-	        long t1 = System.currentTimeMillis();
-	        long e1 = t1 - s1;
-	        log.info("Elapsed milliseconds to get file: " + Long.toString(e1));
+			
+			// first, connect to memcache
+			CacheFactory cacheFactory = CacheManager.getInstance().getCacheFactory();
+	        cache = cacheFactory.createCache(Collections.emptyMap());
+
+	        // ask for the spatial index in memory
+	        log.info("Fetching SLC index from memory");
+	        index = (STRtree) cache.get("saltlakecountyindex");
+	        //
+			
+	        // if it was not in the cache, fetch it from the filesystem
+	        if(index == null)
+	        {
+	        	log.info("SLC index was not in memory, fetching from file");
+	        	long s1 = System.currentTimeMillis();
+		    	log.info("Fetch serialized index for Salt Lake County");
+		        File file = new File("WEB-INF/saltlakecounty.ser");
+		        log.info(file.getAbsolutePath());
+		        log.info("Creating FileInputStream");
+		        FileInputStream fis = new FileInputStream(file);
+		        log.info("Creating ObjectInputStream");
+		        ObjectInputStream in = new ObjectInputStream(fis);
+		        long t1 = System.currentTimeMillis();
+		        long e1 = t1 - s1;
+		        log.info("Elapsed milliseconds to get file: " + Long.toString(e1));
+		        
+		        log.info("Deserialize index");
+		        
+				long s2 = System.currentTimeMillis();
+		    	index = (STRtree) in.readObject();
+				long t2 = System.currentTimeMillis();
+				long e2 = t2 - s2;
+				log.info("Elapsed milliseconds to deserialize index: " + Long.toString(e2));
+				
+				// now put the index in memcache
+				log.info("Putting index in cache");
+				cache.put("saltlakecountyindex", index);
+				
+				// take it out again to see what it is
+				STRtree test = (STRtree) cache.get("saltlakecountyindex");
+				log.info("test of index:" + test);
+		        
+	        } else
+	        {
+	        	log.info("Index existed in cache");
+	        }
 	        
-	        log.info("Deserialize index");
-	        
-			long s2 = System.currentTimeMillis();
-	    	index = (STRtree) in.readObject();
-			long t2 = System.currentTimeMillis();
-			long e2 = t2 - s2;
-			log.info("Elapsed milliseconds to deserialize index: " + Long.toString(e2));
 			
 			// i wonder if forcing a hit on one of the spatial methods
 			// would speed things up a bit on the first click

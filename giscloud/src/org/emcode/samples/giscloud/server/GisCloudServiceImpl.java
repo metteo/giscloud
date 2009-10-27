@@ -50,6 +50,8 @@ public class GisCloudServiceImpl extends RemoteServiceServlet implements
 		try
 		{
 			
+			log.info("Loading on startup...");
+	        
 			// first, connect to memcache
 			CacheFactory cacheFactory = CacheManager.getInstance().getCacheFactory();
 	        cache = cacheFactory.createCache(Collections.emptyMap());
@@ -99,8 +101,8 @@ public class GisCloudServiceImpl extends RemoteServiceServlet implements
 			
 			// i wonder if forcing a hit on one of the spatial methods
 			// would speed things up a bit on the first click
-			log.info("Let's hit point in polygon at start up");
-			pointInPolygon("0,0"); // middle of the ocean, but who cares.
+			//log.info("Let's hit point in polygon at start up");
+			//pointInPolygon("0,0"); // middle of the ocean, but who cares.
 			
 		} catch (Exception e) {
 			throw new ServletException("Servlet Exception: " + e.getLocalizedMessage());
@@ -109,6 +111,8 @@ public class GisCloudServiceImpl extends RemoteServiceServlet implements
 	
 
 	public String pointInPolygon(String lngLat) {
+		
+		log.info("Executing pointInPolygon test with bbox=" + lngLat);
 		
 		String geoGreeting = "Sorry. You didn't click <i>within</i> the boundary of Salt Lake County. Try again.";
 		
@@ -155,6 +159,7 @@ public class GisCloudServiceImpl extends RemoteServiceServlet implements
 	
 	public String polygonInPolygon(String bbox) {
 		
+		log.info("Executing polygonInPolygon test with bbox=" + bbox);
 		String geoGreeting = "Sorry. The map bounds <i>expand beyond</i> the boundary of Salt Lake County.";
 		
 		try

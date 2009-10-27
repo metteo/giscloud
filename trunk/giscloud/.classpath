@@ -10,6 +10,6 @@
 	<classpathentry kind="lib" path="/lib/google/gwt/gwt-maps-1.0.4/gwt-maps.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="src" path="/java-topology-suite"/>
-	<classpathentry kind="lib" path="/Volumes/SFM250GB 1/sfm/lib/ostermillerutils_1_07_00.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/ostermillerutils_1_07_00.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>

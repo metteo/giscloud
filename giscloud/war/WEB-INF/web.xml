@@ -11,6 +11,44 @@
   </welcome-file-list>
   
   <!-- Servlets -->
+
+  <servlet>
+    <servlet-name>loadBlockGroups</servlet-name>
+    <servlet-class>org.emcode.samples.giscloud.server.LoadBlockGroupGeometryServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>loadBlockGroups</servlet-name>
+    <url-pattern>/loadBlockGroups</url-pattern>
+  </servlet-mapping>
+    
+  <servlet>
+    <servlet-name>readStaticIndex</servlet-name>
+    <servlet-class>org.emcode.samples.giscloud.server.ReadStaticIndexServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>readStaticIndex</servlet-name>
+    <url-pattern>/readStaticIndex</url-pattern>
+    <load-on-startup/>
+  </servlet-mapping>
+  
+  <servlet>
+    <servlet-name>strTreeTest</servlet-name>
+    <servlet-class>org.emcode.samples.giscloud.server.STRTreeTest</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>strTreeTest</servlet-name>
+    <url-pattern>/strTreeTest</url-pattern>
+  </servlet-mapping>
+  
+  <servlet>
+    <servlet-name>helloWorld</servlet-name>
+    <servlet-class>org.emcode.samples.giscloud.server.HelloWorldServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>helloWorld</servlet-name>
+    <url-pattern>/helloworld</url-pattern>
+  </servlet-mapping>
+  
   <servlet>
     <servlet-name>greetServlet</servlet-name>
     <servlet-class>org.emcode.samples.giscloud.server.GisCloudServiceImpl</servlet-class>
@@ -19,6 +57,7 @@
   <servlet-mapping>
     <servlet-name>greetServlet</servlet-name>
     <url-pattern>/giscloud/greet</url-pattern>
+    <load-on-startup>10</load-on-startup>
   </servlet-mapping>
 
      <servlet>

@@ -109,7 +109,6 @@ public class GisCloud implements EntryPoint {
 	     */
 	    map.addMapClickHandler(new MapClickHandler(){
 
-			@Override
 			public void onClick(MapClickEvent event) {
 				LatLng point = event.getLatLng();
 				map.panTo(point);
@@ -133,7 +132,6 @@ public class GisCloud implements EntryPoint {
 		 */
 	    map.addMapZoomEndHandler(new MapZoomEndHandler(){
 
-			@Override
 			public void onZoomEnd(MapZoomEndEvent event) {
 				
 				/*
@@ -175,7 +173,6 @@ public class GisCloud implements EntryPoint {
 	     */
 	    map.addMapDragEndHandler(new MapDragEndHandler(){
 
-			@Override
 			public void onDragEnd(MapDragEndEvent event) {
 				
 				/*
@@ -259,7 +256,7 @@ public class GisCloud implements EntryPoint {
 		vp.setCellHorizontalAlignment(codeRepository, HasHorizontalAlignment.ALIGN_CENTER);
 		
 		// version
-		version = new HTML("beta 0.6");
+		version = new HTML("beta 0.8 - featuring a JTS spatial index (STRtree) deserialized from disk.");
 		vp.add(version);
 		vp.setCellHorizontalAlignment(version, HasHorizontalAlignment.ALIGN_CENTER);
 		
